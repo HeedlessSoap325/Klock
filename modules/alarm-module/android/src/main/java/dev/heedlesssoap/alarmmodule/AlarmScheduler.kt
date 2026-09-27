@@ -42,6 +42,28 @@ object AlarmScheduler {
         save(context, alarm);
 	}
 	
+	fun rescheduleAll(context: Context) {
+		val prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+		val now = System.currentTimeMillis();
+		
+		for ((key, value) in prefs.all) {
+		    val alarm_obj = JSONObject(value as String);
+		    
+			val alarm = Alarm(
+			    alarm_obj.getInt("id"), 
+			    alarm_obj.getLong("triggerAt"),
+			    alarm_obj.getString("label"),
+			    alarm_obj.getString("group")
+			);
+			
+			if (alarm.triggerAt > now) {
+				schedule(context, alarm);
+			} else {
+				remove(context, alarm.id);
+			}
+		}
+	}
+	
 	fun cancel(context: Context, id: Int) {
 		val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager;
 		

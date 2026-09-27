@@ -44,7 +44,33 @@ object AlarmNotificationScheduler {
         save(context, notification);
 	}
 	
-	fun cancel(context: Context, id: Int) {
+	fun rescheduleAll(context: Context) {
+		val prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+		val now = System.currentTimeMillis();
+		
+		for ((key, value) in prefs.all) {
+			val notification_obj = JSONObject(value as String);
+			
+			val notification = AlarmNotification(
+			    notification_obj.getInt("id"), 
+			    notification_obj.getLong("delay"), 
+			    Alarm(
+			        notification_obj.getInt("alarm.id"), 
+			        notification_obj.getLong("alarm.triggerAt"), 
+			        notification_obj.getString("alarm.label"), 
+			        notification_obj.getString("alarm.group"),
+			    ),
+			)
+			
+			if (notification.alarm.triggerAt > now) { // schedule will handle the case, where the triggerAt - delay > now
+				schedule(context, notification);
+			} else {
+				remove(context, notification.id);
+			}
+		}
+	}
+	
+	private fun cancel(context: Context, id: Int) {
 		val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager;
 		
 		val pendingIntent = PendingIntent.getBroadcast(
