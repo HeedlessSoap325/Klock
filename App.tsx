@@ -1,31 +1,32 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { Button, StyleSheet, Text, View } from 'react-native';
 
 
 import AlarmModule from './modules/alarm-module/src/AlarmModule';
 import type { Alarm, AlarmNotification } from './modules/alarm-module/src/AlarmModule.types';
 
 export default function App() {
-  const alarm: Alarm = {
-    id: 1,
-    triggerAt: Date.now() + 2 * 60 * 1000, // now + 2 Minutes
-    label: "Test 123",
-    group: "idk",
-  };
-
-  const notification: AlarmNotification = {
-    id: 2,
-    delay: 1 * 60 * 1000, // 1 Minute
-    alarm: alarm,
+  async function scheduleAlarmIn2Minutes() {
+    const alarm: Alarm = {
+      id: Date.now() % 2147483647,
+      triggerAt: Date.now() + 2 * 60 * 1000, // now + 2 Minutes
+      label: "Test 123",
+      group: "idk",
+    };
+  
+    const notification: AlarmNotification = {
+      id: alarm.id + 1,
+      delay: 1 * 60 * 1000, // 1 Minute
+      alarm: alarm,
+    }
+  
+    await AlarmModule.scheduleAlarm(alarm);
+    await AlarmModule.scheduleAlarmNotification(notification);
   }
-
-  console.log("fiering in: ", alarm.triggerAt - notification.delay - Date.now(), "miliseconds");
-  AlarmModule.scheduleAlarm(alarm);
-  AlarmModule.scheduleAlarmNotification(notification);
-
+  
   return (
     <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
+      <Button title='Schedule Alarm in 2 Minutes!' onPress={scheduleAlarmIn2Minutes} />
       <StatusBar style="auto" />
     </View>
   );
