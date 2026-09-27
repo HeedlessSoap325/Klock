@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="alarm_background">#08090B</color>
+
+    <color name="alarm_primary_text">#FFFFFF</color>
+    <color name="alarm_secondary_text">#A9ADB5</color>
+
+    <color name="alarm_snooze_background">#25272C</color>
+    <color name="alarm_dismiss_background">#DDE8FF</color>
+
+    <color name="alarm_dismiss_text">#101318</color>
+
+</resources>
