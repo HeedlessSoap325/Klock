@@ -26,16 +26,12 @@ object AlarmScheduler {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         );
 
-		val showIntent = Intent(
+        val launchIntent = context.packageManager.getLaunchIntentForPackage(context.packageName);
+        val showPendingIntent = PendingIntent.getActivity(
             context,
-            AlarmReceiver::class.java
-        );
-
-        val showPendingIntent = PendingIntent.getBroadcast(
-            context,
-            3,
-            showIntent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            0,
+            launchIntent,
+            PendingIntent.FLAG_IMMUTABLE
         );
 
         alarmManager.setAlarmClock(AlarmManager.AlarmClockInfo(alarm.triggerAt, showPendingIntent), pendingIntent);

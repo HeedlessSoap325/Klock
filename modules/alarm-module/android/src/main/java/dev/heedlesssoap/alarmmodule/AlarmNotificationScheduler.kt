@@ -26,16 +26,12 @@ object AlarmNotificationScheduler {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         );
 
-		val showIntent = Intent(
+        val launchIntent = context.packageManager.getLaunchIntentForPackage(context.packageName);
+        val showPendingIntent = PendingIntent.getActivity(
             context,
-            AlarmNotificationReceiver::class.java
-        );
-
-        val showPendingIntent = PendingIntent.getBroadcast(
-            context,
-            4,
-            showIntent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            0,
+            launchIntent,
+            PendingIntent.FLAG_IMMUTABLE
         );
         
         val triggerAt = if (notification.alarm.triggerAt - notification.delay > System.currentTimeMillis()) notification.alarm.triggerAt - notification.delay else System.currentTimeMillis();
