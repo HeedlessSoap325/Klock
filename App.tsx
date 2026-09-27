@@ -3,10 +3,25 @@ import { StyleSheet, Text, View } from 'react-native';
 
 
 import AlarmModule from './modules/alarm-module/src/AlarmModule';
-import type { } from './modules/alarm-module/src/AlarmModule.types';
+import type { Alarm, AlarmNotification } from './modules/alarm-module/src/AlarmModule.types';
 
 export default function App() {
-  AlarmModule.scheduleAlarm(1, new Date(2026, 9, 25, 23, 40).getMilliseconds(), "Test 123");
+  const alarm: Alarm = {
+    id: 1,
+    triggerAt: Date.now() + 2 * 60 * 1000, // now + 2 Minutes
+    label: "Test 123",
+    group: "idk",
+  };
+
+  const notification: AlarmNotification = {
+    id: 2,
+    delay: 1 * 60 * 1000, // 1 Minute
+    alarm: alarm,
+  }
+
+  console.log("fiering in: ", alarm.triggerAt - notification.delay - Date.now(), "miliseconds");
+  AlarmModule.scheduleAlarm(alarm);
+  AlarmModule.scheduleAlarmNotification(notification);
 
   return (
     <View style={styles.container}>

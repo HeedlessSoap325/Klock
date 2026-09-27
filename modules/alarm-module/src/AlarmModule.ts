@@ -1,7 +1,10 @@
 import { NativeModule, requireNativeModule } from 'expo';
+import { Alarm, AlarmNotification } from './AlarmModule.types';
 
 declare class AlarmModule extends NativeModule<{}> {
-	scheduleAlarm(id: number, triggerAt: number, label: string): Promise<void>;
+	scheduleAlarm(alarm: Alarm): Promise<void>;
+
+	scheduleAlarmNotification(notification: AlarmNotification): Promise<void>;
 }
 
 export default requireNativeModule<AlarmModule>('AlarmModule');
