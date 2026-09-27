@@ -78,6 +78,7 @@ object AlarmScheduler {
 		}
 		
 		remove(context, id);
+		AlarmNotificationScheduler.cancelByAlarmId(context, id);
 	}
 	
 	private fun save(context: Context, alarm: Alarm) {

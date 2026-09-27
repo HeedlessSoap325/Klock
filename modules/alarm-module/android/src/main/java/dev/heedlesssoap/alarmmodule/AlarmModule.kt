@@ -15,7 +15,16 @@ class AlarmModule : Module() {
                 AlarmScheduler.schedule(
                     appContext.reactContext ?: throw Exception("React context unavailable"),
                     alarm
-                )
+                );
+        }
+        
+        AsyncFunction("cancelAlarm") { 
+                id: Int
+            ->
+                AlarmScheduler.cancel(
+                    appContext.reactContext ?: throw Exception("React context unavailable"),
+                    id
+                );
         }
             
         AsyncFunction("scheduleAlarmNotification") { 
@@ -23,8 +32,8 @@ class AlarmModule : Module() {
             ->
                 AlarmNotificationScheduler.schedule(
                     appContext.reactContext ?: throw Exception("React context unavailable"),
-                notification
-                )
+                    notification
+                );
         }
   }
 }

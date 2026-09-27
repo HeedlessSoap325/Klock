@@ -70,6 +70,18 @@ object AlarmNotificationScheduler {
 		}
 	}
 	
+	fun cancelByAlarmId(context: Context, alarm_id: Int) {
+		val prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+		
+		for ((key, value) in prefs.all) {
+			val notification_obj = JSONObject(value as String);
+			
+			if (notification_obj.getInt("alarm.id") == alarm_id) {
+				cancel(context, notification_obj.getInt("id"));
+			}
+		}
+	}
+	
 	private fun cancel(context: Context, id: Int) {
 		val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager;
 		
