@@ -15,5 +15,19 @@
 				<action android:name="android.intent.action.TIMEZONE_CHANGED"/>
 			</intent-filter>
 		</receiver>
+
+		<activity
+			android:name=".AlarmRingActivity"
+			android:exported="false"
+			android:showWhenLocked="true"
+			android:turnScreenOn="true"
+			android:excludeFromRecents="true"
+			android:launchMode="singleInstance"
+			android:theme="@style/Theme.AppCompat.NoActionBar" />
+
+		<service
+			android:name=".AlarmRingingService"
+			android:exported="false"
+			android:foregroundServiceType="mediaPlayback" />
 	</application>
 </manifest>
