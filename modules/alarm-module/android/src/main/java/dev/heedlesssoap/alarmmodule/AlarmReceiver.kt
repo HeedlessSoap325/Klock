@@ -19,5 +19,6 @@ class AlarmReceiver : BroadcastReceiver() {
             
     
         context.startForegroundService(alarmRingService);
+        AlarmScheduler.cancel(context, id)
     }
 }

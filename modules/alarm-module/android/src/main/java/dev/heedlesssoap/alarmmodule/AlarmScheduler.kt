@@ -82,7 +82,7 @@ object AlarmScheduler {
         context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().putString(alarm.id.toString(), alarm_obj).apply();
 	}
 	
-	fun remove(context: Context, id: Int) {
+	private fun remove(context: Context, id: Int) {
 		context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().remove(id.toString()).apply();
 	}
 }

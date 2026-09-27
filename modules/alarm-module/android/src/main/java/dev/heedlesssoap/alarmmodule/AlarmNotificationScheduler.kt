@@ -1,6 +1,7 @@
 package dev.heedlesssoap.alarmmodule
 
 import android.app.AlarmManager
+import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
@@ -81,6 +82,9 @@ object AlarmNotificationScheduler {
 	private fun cancel(context: Context, id: Int) {
 		val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager;
 		
+		val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager;
+        notificationManager.cancel(id)
+		
 		val pendingIntent = PendingIntent.getBroadcast(
 		    context, id, Intent(context, AlarmNotificationReceiver::class.java),
 		    PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_IMMUTABLE
@@ -99,7 +103,7 @@ object AlarmNotificationScheduler {
         context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().putString(notification.id.toString(), alarm_obj).apply();
 	}
 	
-	fun remove(context: Context, id: Int) {
+	private fun remove(context: Context, id: Int) {
 		context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().remove(id.toString()).apply();
 	}
 }
