@@ -3,22 +3,18 @@ package dev.heedlesssoap.alarmmodule
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import org.json.JSONObject
 
 class AlarmReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
-        val PREFS = "alarms";
-        
-        val id = intent.getIntExtra("id", 0);
-        val prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
-    	val alarm_obj = JSONObject(prefs.getString(id.toString(), "") as String);
+        val alarm_id = intent.getIntExtra("alarm_id", 0);
+        val alarm = PreferencesWrapper.getAlarm(context, alarm_id);
     	
         val alarmRingService = Intent(context, AlarmRingingService::class.java)
-            .putExtra("id", alarm_obj.getInt("id"))
-            .putExtra("label", alarm_obj.getString("label"));
+            .putExtra("alarm_id", alarm.id)
+            .putExtra("alarm_label", alarm.label);
             
     
         context.startForegroundService(alarmRingService);
-        AlarmScheduler.cancel(context, id)
+        AlarmScheduler.cancel(context, alarm_id);
     }
 }

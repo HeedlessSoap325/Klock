@@ -7,16 +7,14 @@ import android.content.Intent
 import org.json.JSONObject
 
 object AlarmScheduler {
-    private const val PREFS = "alarms";
-    
-	fun schedule(context: Context, alarm: Alarm) {
+    fun schedule(context: Context, alarm: Alarm) {
 		val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager;
 
 		val fireIntent = Intent(
             context,
             AlarmReceiver::class.java
         ).apply {
-            putExtra("id", alarm.id)
+            putExtra("alarm_id", alarm.id)
         }
 
         val pendingIntent = PendingIntent.getBroadcast(
@@ -35,27 +33,18 @@ object AlarmScheduler {
         );
 
         alarmManager.setAlarmClock(AlarmManager.AlarmClockInfo(alarm.triggerAt, showPendingIntent), pendingIntent);
-        save(context, alarm);
+        PreferencesWrapper.saveAlarm(context, alarm);
 	}
 	
 	fun rescheduleAll(context: Context) {
-		val prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+		val alarms = PreferencesWrapper.getAllAlarms(context);
 		val now = System.currentTimeMillis();
 		
-		for ((key, value) in prefs.all) {
-		    val alarm_obj = JSONObject(value as String);
-		    
-			val alarm = Alarm(
-			    alarm_obj.getInt("id"), 
-			    alarm_obj.getLong("triggerAt"),
-			    alarm_obj.getString("label"),
-			    alarm_obj.getString("group")
-			);
-			
+		for (alarm in alarms) {
 			if (alarm.triggerAt > now) {
 				schedule(context, alarm);
 			} else {
-				remove(context, alarm.id);
+				PreferencesWrapper.removeAlarm(context, alarm.id)
 			}
 		}
 	}
@@ -73,16 +62,7 @@ object AlarmScheduler {
 			pendingIntent.cancel();
 		}
 		
-		remove(context, id);
+		PreferencesWrapper.removeAlarm(context, id);
 		AlarmNotificationScheduler.cancelByAlarmId(context, id);
-	}
-	
-	private fun save(context: Context, alarm: Alarm) {
-		val alarm_obj = JSONObject().put("id", alarm.id).put("label", alarm.label).put("triggerAt", alarm.triggerAt).put("group", alarm.group).toString();
-        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().putString(alarm.id.toString(), alarm_obj).apply();
-	}
-	
-	private fun remove(context: Context, id: Int) {
-		context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().remove(id.toString()).apply();
 	}
 }

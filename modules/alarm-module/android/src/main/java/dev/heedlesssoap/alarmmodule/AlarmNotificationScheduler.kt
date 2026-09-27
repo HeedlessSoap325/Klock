@@ -8,8 +8,6 @@ import android.content.Intent
 import org.json.JSONObject
 
 object AlarmNotificationScheduler {
-    private const val PREFS = "alarm_notifications";
-    
 	fun schedule(context: Context, notification: AlarmNotification) {
 		val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager;
 
@@ -17,7 +15,7 @@ object AlarmNotificationScheduler {
             context,
             AlarmNotificationReceiver::class.java
         ).apply {
-            putExtra("id", notification.id)
+            putExtra("notification_id", notification.id)
         }
 
         val pendingIntent = PendingIntent.getBroadcast(
@@ -38,43 +36,28 @@ object AlarmNotificationScheduler {
         val triggerAt = if (notification.alarm.triggerAt - notification.delay > System.currentTimeMillis()) notification.alarm.triggerAt - notification.delay else System.currentTimeMillis();
 
         alarmManager.setAlarmClock(AlarmManager.AlarmClockInfo(triggerAt, showPendingIntent), pendingIntent);
-        save(context, notification);
+        PreferencesWrapper.saveNotification(context, notification);
 	}
 	
 	fun rescheduleAll(context: Context) {
-		val prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+		val notifications = PreferencesWrapper.getAllNotifications(context);
 		val now = System.currentTimeMillis();
 		
-		for ((key, value) in prefs.all) {
-			val notification_obj = JSONObject(value as String);
-			
-			val notification = AlarmNotification(
-			    notification_obj.getInt("id"), 
-			    notification_obj.getLong("delay"), 
-			    Alarm(
-			        notification_obj.getInt("alarm.id"), 
-			        notification_obj.getLong("alarm.triggerAt"), 
-			        notification_obj.getString("alarm.label"), 
-			        notification_obj.getString("alarm.group"),
-			    ),
-			)
-			
+		for (notification in notifications) {
 			if (notification.alarm.triggerAt > now) { // schedule will handle the case, where the triggerAt - delay > now
 				schedule(context, notification);
 			} else {
-				remove(context, notification.id);
+				PreferencesWrapper.removeNotification(context, notification.id)
 			}
 		}
 	}
 	
 	fun cancelByAlarmId(context: Context, alarm_id: Int) {
-		val prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+		val notifications = PreferencesWrapper.getAllNotifications(context);
 		
-		for ((key, value) in prefs.all) {
-			val notification_obj = JSONObject(value as String);
-			
-			if (notification_obj.getInt("alarm.id") == alarm_id) {
-				cancel(context, notification_obj.getInt("id"));
+		for (notification in notifications) {
+			if (notification.alarm.id == alarm_id) {
+				cancel(context, notification.id);
 			}
 		}
 	}
@@ -95,15 +78,6 @@ object AlarmNotificationScheduler {
 			pendingIntent.cancel();
 		}
 		
-		remove(context, id);
-	}
-	
-	private fun save(context: Context, notification: AlarmNotification) {
-		val alarm_obj = JSONObject().put("id", notification.id).put("delay", notification.delay).put("alarm.id", notification.alarm.id).put("alarm.label", notification.alarm.label).put("alarm.triggerAt", notification.alarm.triggerAt).put("alarm.group", notification.alarm.group).toString();
-        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().putString(notification.id.toString(), alarm_obj).apply();
-	}
-	
-	private fun remove(context: Context, id: Int) {
-		context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().remove(id.toString()).apply();
+		PreferencesWrapper.removeNotification(context, id);
 	}
 }

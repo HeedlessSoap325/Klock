@@ -14,8 +14,8 @@ class AlarmRingingService : Service() {
     private var vibrator: Vibrator? = null
     
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        val id = intent?.getIntExtra("id", 0) ?: 0;
-        val label = intent?.getStringExtra("label") ?: "Alarm";
+        val id = intent?.getIntExtra("alarm_id", 0) ?: 0;
+        val label = intent?.getStringExtra("alarm_label") ?: "Alarm";
         
         val ringtoneURI = RingtoneManager.getActualDefaultRingtoneUri(this, RingtoneManager.TYPE_ALARM);
         mediaPlayer = MediaPlayer().apply {
@@ -38,8 +38,8 @@ class AlarmRingingService : Service() {
         
         val ringIntent = Intent(this, AlarmRingActivity::class.java)
 			.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-			.putExtra("id", id)
-			.putExtra("label", label);
+			.putExtra("alarm_id", id)
+			.putExtra("alarm_label", label);
 			
 		startActivity(ringIntent);
 		

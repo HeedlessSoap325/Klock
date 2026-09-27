@@ -14,13 +14,8 @@ import java.time.format.DateTimeFormatter
 
 class AlarmNotificationReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
-    	val PREFS = "alarm_notifications";
-    	
-    	val id = intent.getIntExtra("id", 0);
-    	
-    	val prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
-    	val notification_obj = JSONObject(prefs.getString(id.toString(), "") as String);
-    	
+    	val notification_id = intent.getIntExtra("notification_id", 0);
+        val alarm_notification = PreferencesWrapper.getNotification(context, notification_id);
 
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         if (Build.VERSION.SDK_INT >= 26) {
@@ -29,13 +24,12 @@ class AlarmNotificationReceiver : BroadcastReceiver() {
             );
         }
         
-        val alarmTriggerTime = Instant.ofEpochMilli(notification_obj.getLong("alarm.triggerAt"))
+        val alarmTriggerTime = Instant.ofEpochMilli(alarm_notification.alarm.triggerAt)
             .atZone(ZoneId.systemDefault())
             .format(DateTimeFormatter.ofPattern("HH:mm"));
         
         val dismissIntent = Intent(context, DismissAlarmReceiver::class.java).apply {
-            putExtra("alarm_id", notification_obj.getInt("alarm.id"))
-            putExtra("notification_id", id)
+            putExtra("alarm_id", alarm_notification.alarm.id)
         };
         
         val dismissPendingIntent = PendingIntent.getBroadcast(
@@ -61,14 +55,14 @@ class AlarmNotificationReceiver : BroadcastReceiver() {
 
         val notification = Notification.Builder(context, "alarms")
             .setSmallIcon(android.R.drawable.ic_lock_idle_alarm)
-            .setContentTitle("Upcoming Alarm ⋅ " + notification_obj.getString("alarm.group"))
-            .setContentText(alarmTriggerTime + " ⋅ " + notification_obj.getString("alarm.label"))
+            .setContentTitle("Upcoming Alarm ⋅ " + alarm_notification.alarm.group)
+            .setContentText(alarmTriggerTime + " ⋅ " + alarm_notification.alarm.label)
             .addAction(dismissAction)
             .setContentIntent(showPendingIntent)
             .setCategory(Notification.CATEGORY_ALARM)
             .setPriority(Notification.PRIORITY_HIGH)
             .build();
             
-        notificationManager.notify(id, notification);
+        notificationManager.notify(notification_id, notification);
     }
 }

@@ -18,8 +18,8 @@ class AlarmRingActivity : AppCompatActivity() {
             .requestDismissKeyguard(this, null);
     
 
-        val label = intent.getStringExtra("label") ?: "Alarm";
-        val id = intent.getIntExtra("id", 0);
+        val label = intent.getStringExtra("alarm_label") ?: "Alarm";
+        val id = intent.getIntExtra("alarm_id", 0);
 
         // Simplest version: native layout with Snooze/Dismiss buttons.
         setContentView(R.layout.activity_alarm_ringing)
