@@ -13,6 +13,33 @@ class AlarmRingingService : Service() {
 	private var mediaPlayer: MediaPlayer? = null
     private var vibrator: Vibrator? = null
     
+    override fun onCreate() {
+        super.onCreate()
+
+        val channel = NotificationChannel(
+            "alarm_ringing",
+            "Alarm ringing",
+            NotificationManager.IMPORTANCE_HIGH
+        ).apply {
+            description = "Notifications for ringing alarms"
+        }
+
+        val notificationManager = getSystemService(NotificationManager::class.java)
+
+        notificationManager.createNotificationChannel(channel)
+
+        val notification = Notification.Builder(this, "alarm_ringing")
+            .setSmallIcon(android.R.drawable.ic_notification_overlay)
+            .setContentTitle("Alarm")
+            .setContentText("Alarm is ringing")
+            .setPriority(Notification.PRIORITY_HIGH)
+            .setCategory(Notification.CATEGORY_ALARM)
+            .setOngoing(true)
+            .build()
+
+        startForeground(1001, notification);
+    }
+    
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val id = intent?.getIntExtra("alarm_id", 0) ?: 0;
         val label = intent?.getStringExtra("alarm_label") ?: "Alarm";
@@ -43,7 +70,7 @@ class AlarmRingingService : Service() {
 			
 		startActivity(ringIntent);
 		
-		return START_STICKY
+		return START_NOT_STICKY
     }
     
     override fun onDestroy() {
