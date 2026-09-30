@@ -19,6 +19,9 @@
       },
       "predictiveBackGestureEnabled": false,
       "package": "dev.heedlesssoap.klock"
-    }
+    },
+    "plugins": [
+      "expo-router"
+    ]
   }
 }
