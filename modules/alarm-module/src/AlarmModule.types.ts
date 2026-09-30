@@ -1,13 +1,13 @@
 // Define your exported module types here.
-export interface Alarm {
+export interface AlarmModuleAlarm {
 	id: number,
 	triggerAt: number,
 	label: string,
 	group: string,
 }
 
-export interface AlarmNotification {
+export interface AlarmModuleNotification {
 	id: number,
 	delay: number,
-	alarm: Alarm,
+	alarm: AlarmModuleAlarm,
 }
