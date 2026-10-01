@@ -4,9 +4,12 @@ import { Alarm, WEEK } from "../models/alarm";
 import { COLORS } from "../styles/colors";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { clamp, formatDuration, msUntilNextRing, pad, summarizeDays } from "../utils/utils";
+import { useAlarms } from "../context/AlarmContext";
+import { isAlarmGroup } from "../models/entry";
 
 interface AlarmDetailViewProps {
-	onSave?: (alarm: Alarm) => void;
+	onSave?: (alarm: Alarm, group_id: number | null) => void;
+	groupId: number | null;
 	alarm?: Alarm;
 	onDelete?: (tid: number) => void;
 	onCancel?: () => void;
@@ -15,7 +18,7 @@ interface AlarmDetailViewProps {
 
 type Weekday = Alarm["weekdays"][number];
 
-export default function AlarmDetailView({ onSave, alarm, onDelete, onCancel: onCancle, onPickRingtone }: AlarmDetailViewProps) {
+export default function AlarmDetailView({ onSave, alarm, onDelete, onCancel: onCancle, onPickRingtone, groupId }: AlarmDetailViewProps) {
 	const isEdit = alarm !== undefined;
 	const now = new Date(Date.now())
 	const insets = useSafeAreaInsets();
@@ -25,6 +28,9 @@ export default function AlarmDetailView({ onSave, alarm, onDelete, onCancel: onC
 	const [weekdays, setWeekdays] = useState<Weekday[]>(alarm?.weekdays ?? []);
 	const [name, setName] = useState(alarm?.name ?? "");
 	const [vibrate, setVibrate] = useState(alarm?.vibrate ?? true);
+	const [selectedGroupId, setSelectedGroupId] = useState<number | null>(groupId);
+  	const [groupOpen, setGroupOpen] = useState(false);
+
 	const ringtone = alarm?.ringtone ?? "default";
 
 	const h = clamp(parseInt(hour, 10) || 0, 0, 23);
@@ -34,6 +40,15 @@ export default function AlarmDetailView({ onSave, alarm, onDelete, onCancel: onC
 		const ms = msUntilNextRing(h, m, weekdays);
 		return ms === null ? null : formatDuration(ms);
 	}, [h, m, weekdays]);
+
+	const { entries } = useAlarms();
+
+	const selectedGroup = entries.filter(isAlarmGroup).find((g) => g.id === selectedGroupId);
+
+	const groupOptions: { id: number | null; name: string }[] = [
+		{ id: null, name: "No group" },
+		...entries.filter(isAlarmGroup).map((g) => ({ id: g.id, name: g.name })),
+	];
 
 	function toggleDay(day: Weekday) {
 		setWeekdays((prev) =>
@@ -55,7 +70,7 @@ export default function AlarmDetailView({ onSave, alarm, onDelete, onCancel: onC
 			pauses: alarm?.pauses,
 		};
 
-		onSave!(newAlarm);
+		onSave!(newAlarm, selectedGroupId);
 	};
 
 	return (
@@ -128,6 +143,68 @@ export default function AlarmDetailView({ onSave, alarm, onDelete, onCancel: onC
 				</View>
 
 				<View style={styles.card}>
+				{entries.filter(isAlarmGroup).length > 0 && (
+					<>
+						<Pressable
+							style={styles.row}
+							onPress={() => setGroupOpen((o) => !o)}
+							accessibilityRole="button"
+							accessibilityState={{ expanded: groupOpen }}
+						>
+							<Text style={styles.rowLabel}>Group</Text>
+							<View style={styles.groupValueWrap}>
+								<Text style={styles.rowValue} numberOfLines={1}>
+								{selectedGroup?.name ?? "No group"}
+								</Text>
+								<View
+								style={[styles.chevron, groupOpen ? styles.chevronUp : styles.chevronDown]}
+								/>
+							</View>
+						</Pressable>
+
+						{groupOpen && (
+						<ScrollView
+							style={styles.dropdown}
+							nestedScrollEnabled
+							keyboardShouldPersistTaps="handled"
+						>
+							{groupOptions.map((opt) => {
+								const selected = opt.id === selectedGroupId;
+								return (
+									<Pressable
+										key={opt.id ?? "none"}
+										onPress={() => {
+											setSelectedGroupId(opt.id);
+											setGroupOpen(false);
+										}}
+										accessibilityRole="menuitem"
+										accessibilityState={{ selected }}
+										style={({ pressed }) => [
+											styles.option,
+											selected && styles.optionSelected,
+											pressed && styles.pressed,
+										]}
+									>
+									<View style={[styles.optionDot, opt.id === null && styles.optionDotEmpty]} />
+									<Text
+										style={[styles.optionText, selected && styles.optionTextSelected]}
+										numberOfLines={1}
+									>
+										{opt.name}
+									</Text>
+									{selected && <View style={styles.check} />}
+									</Pressable>
+								);
+							})}
+						</ScrollView>
+						)}
+
+						<View style={styles.divider} />
+					</>
+					)}
+
+					<View style={styles.divider} />
+
 					<View style={styles.row}>
 						<Text style={styles.rowLabel}>Label</Text>
 						<TextInput
@@ -384,5 +461,86 @@ const styles = StyleSheet.create({
 
 	pressed: {
 		opacity: 0.6,
+	},
+
+	groupValueWrap: {
+		flex: 1,
+		flexDirection: "row",
+		justifyContent: "flex-end",
+		alignItems: "center",
+		marginLeft: 16,
+	},
+
+	chevron: {
+		width: 8,
+		height: 8,
+		marginLeft: 10,
+		borderRightWidth: 2,
+		borderBottomWidth: 2,
+		borderColor: COLORS.textMuted,
+	},
+
+	chevronDown: { 
+		transform: [{ rotate: "45deg" }] 
+	},
+
+	chevronUp: { 
+		transform: [{ rotate: "-135deg" }] 
+	},
+	  
+	dropdown: {
+		maxHeight: 200,
+		marginTop: 4,
+		marginBottom: 10,
+		padding: 6,
+		borderRadius: 16,
+		backgroundColor: COLORS.background,
+	},
+
+	option: {
+		flexDirection: "row",
+		alignItems: "center",
+		minHeight: 44,
+		paddingHorizontal: 12,
+		borderRadius: 12,
+	},
+
+	optionSelected: {
+		backgroundColor: COLORS.chip,
+	},
+
+	optionDot: {
+		width: 10,
+		height: 10,
+		borderRadius: 5,
+		marginRight: 12,
+		backgroundColor: COLORS.accent,
+	},
+
+	optionDotEmpty: {
+		backgroundColor: "transparent",
+		borderWidth: 1.5,
+		borderColor: COLORS.textOff,
+	},
+
+	optionText: {
+		flex: 1,
+		fontSize: 14,
+		color: COLORS.textMuted,
+	},
+
+	optionTextSelected: {
+		color: COLORS.text,
+		fontWeight: "600",
+	},
+
+	check: {
+		width: 6,
+		height: 11,
+		marginLeft: 10,
+		borderRightWidth: 2,
+		borderBottomWidth: 2,
+		borderColor: COLORS.accent,
+		transform: [{ rotate: "45deg" }],
 	},
 });

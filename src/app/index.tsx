@@ -52,7 +52,7 @@ export default function AlarmsScreen() {
 				}
 				renderItem={({ item }) =>
 					isAlarmGroup(item) ? (
-						<AlarmGroupView group={item} onClickAlarm={onEditAlarm} onClickAlarmGroup={onEditAlarmGroup} onToggleAlarm={onToggleAlarm} />
+						<AlarmGroupView group={item} onClickAlarm={onEditAlarm} onClickAlarmGroup={onEditAlarmGroup} onToggleGroup={onToggleGroup} onToggleAlarm={onToggleAlarm} />
 					) : (
 						<AlarmView alarm={item} onClick={onEditAlarm} onToggle={onToggleAlarm} />
 					)
