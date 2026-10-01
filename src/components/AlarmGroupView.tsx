@@ -8,10 +8,11 @@ interface Props {
 	group: AlarmGroup;
 	/** Called when the user flips the group switch. Parent should update every alarm in the group. */
 	onToggleGroup?: (active: boolean) => void;
-	onClickAlarm: (alarm_id: number) => void
+	onClickAlarm: (alarm_id: number) => void;
+	onToggleAlarm: (alarm_id: number, value: boolean) => void;
 }
 
-export default function AlarmGroupView({ group, onToggleGroup, onClickAlarm }: Props) {
+export default function AlarmGroupView({ group, onToggleGroup, onClickAlarm, onToggleAlarm }: Props) {
 	// A group is active if at least one of its alarms is active.
 	const isActive = group.alarms.some((alarm) => alarm.active);
 	const [expanded, setExpanded] = useState(isActive);
@@ -69,7 +70,7 @@ export default function AlarmGroupView({ group, onToggleGroup, onClickAlarm }: P
 			group.alarms.map((alarm) => (
 			<View key={alarm.id}>
 				<View style={styles.divider} />
-				<AlarmView alarm={alarm} onClick={onClickAlarm} embedded />
+				<AlarmView alarm={alarm} onClick={onClickAlarm} onToggle={onToggleAlarm} embedded />
 			</View>
 			))}
 		</View>

@@ -9,8 +9,8 @@ interface AlarmContextType {
 	loaded: boolean;
 	addAlarmGroup: (group: AlarmGroup) => void;
 	addAlarm: (alarm: Alarm) => void;
-	updateAlarmGroup: (id: number, newGroup: AlarmGroup) => void;
-	updateAlarm: (id: number, newAlarm: Alarm) => void;
+	updateAlarmGroup: (id: number, groupUpdate: Partial<AlarmGroup>) => void;
+	updateAlarm: (id: number, alarmUpdate: Partial<Alarm>) => void;
 	removeAlarmGroup: (id: number) => void;
 	removeAlarm: (id: number) => void;
 }

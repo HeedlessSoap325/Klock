@@ -13,10 +13,14 @@ export default function AlarmsScreen() {
 	const insets = useSafeAreaInsets();
 	const router = useRouter();
 
-	const { entries } = useAlarms();
+	const { entries, updateAlarm } = useAlarms();
 
 	function onEditAlarm(alarm_id: number) {
 		router.push(`/editAlarm?alarm_id=${encodeURIComponent(alarm_id)}`)
+	}
+
+	function onToggleAlarm(alarm_id: number, value: boolean) {
+		updateAlarm(alarm_id, {active: value})
 	}
 
 	return (
@@ -35,9 +39,9 @@ export default function AlarmsScreen() {
 				}
 				renderItem={({ item }) =>
 					isAlarmGroup(item) ? (
-						<AlarmGroupView group={item} onClickAlarm={onEditAlarm} />
+						<AlarmGroupView group={item} onClickAlarm={onEditAlarm} onToggleAlarm={onToggleAlarm} />
 					) : (
-						<AlarmView alarm={item} onClick={onEditAlarm} />
+						<AlarmView alarm={item} onClick={onEditAlarm} onToggle={onToggleAlarm} />
 					)
 				}
 				ItemSeparatorComponent={() => <View style={styles.separator} />}
