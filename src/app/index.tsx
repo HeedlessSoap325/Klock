@@ -7,6 +7,7 @@ import AlarmGroupView from '../components/AlarmGroupView';
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Entry, isAlarmGroup } from '../models/entry';
 import { COLORS } from '../styles/colors';
+import { Ionicons } from '@expo/vector-icons';
 
 const alarm: Alarm = {
 	id: 1,
@@ -59,6 +60,17 @@ export default function AlarmsScreen() {
 				ItemSeparatorComponent={() => <View style={styles.separator} />}
 				contentContainerStyle={styles.content}
 			/>
+
+			<Pressable style={({pressed}) => [
+				{
+					...styles.addButton,
+					bottom: insets.bottom + styles.addButton.bottom,
+					opacity: pressed ? 0.8 : 1,
+					transform: pressed ? "scale(0.95)" : "",
+				}
+			]}>
+				<Ionicons name="add" size={42} />
+			</Pressable>
 		</View>
 	);
 }
@@ -75,5 +87,14 @@ const styles = StyleSheet.create({
 
 	separator: {
 		height: 12,
+	},
+
+	addButton: {
+		position: "absolute",
+		bottom: 30,
+		right: 30,
+		padding: 10,
+		backgroundColor: COLORS.accent,
+		borderRadius: 16,
 	},
 });
