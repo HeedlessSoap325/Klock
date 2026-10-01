@@ -8,33 +8,12 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Entry, isAlarmGroup } from '../models/entry';
 import { COLORS } from '../styles/colors';
 import { Ionicons } from '@expo/vector-icons';
-
-const alarm: Alarm = {
-	id: 1,
-	name: "SCHOOL",
-	hour: 6,
-	minute: 30,
-	active: true,
-	weekdays: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-	scheduling: [],
-	pauses: undefined,
-	vibrate: true,
-	ringtone: "default",
-}
-
-const alarmGroup: AlarmGroup = {
-	id: 2, 
-	name: "WORK",
-	alarms: [
-		{...alarm, id: 2},
-		{...alarm, id: 3, active: false}
-	]
-}
-
-const entries: Entry[] = [alarm, alarmGroup, alarmGroup, alarmGroup];
+import { useAlarms } from '../context/AlarmContext';
 
 export default function AlarmsScreen() {
 	const insets = useSafeAreaInsets();
+
+	const { entries } = useAlarms();
 
 	return (
 		<View style={[
