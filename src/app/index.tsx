@@ -1,9 +1,12 @@
-import { Pressable, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
+import { FlatList, Pressable, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { Alarm } from '../models/alarm';
 import AlarmView from '../components/AlarmView';
 import { AlarmGroup } from '../models/alarmGroup';
 import AlarmGroupView from '../components/AlarmGroupView';
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Entry, isAlarmGroup } from '../models/entry';
+import { COLORS } from '../styles/colors';
 
 const alarm: Alarm = {
 	id: 1,
@@ -27,22 +30,50 @@ const alarmGroup: AlarmGroup = {
 	]
 }
 
+const entries: Entry[] = [alarm, alarmGroup, alarmGroup, alarmGroup];
+
 export default function AlarmsScreen() {
+	const insets = useSafeAreaInsets();
+
 	return (
-		<View style={styles.container}>
+		<View style={[
+			styles.container,
+			{
+				paddingBottom: insets.bottom,
+			}
+		]}>
 			<StatusBar style="light" />
 
-			<AlarmView alarm={alarm} />
-			<AlarmGroupView group={alarmGroup}/>
+			<FlatList
+				data={entries}
+				keyExtractor={(entry) =>
+					isAlarmGroup(entry) ? `group-${entry.id}` : `alarm-${entry.id}`
+				}
+				renderItem={({ item }) =>
+					isAlarmGroup(item) ? (
+						<AlarmGroupView group={item} />
+					) : (
+						<AlarmView alarm={item} />
+					)
+				}
+				ItemSeparatorComponent={() => <View style={styles.separator} />}
+				contentContainerStyle={styles.content}
+			/>
 		</View>
 	);
 }
 
 const styles = StyleSheet.create({
-  container: {
-	flex: 1,
-	backgroundColor: '#141a2d',
-	alignItems: "center",
-	gap: 15,
-  },
+	container: {
+		backgroundColor: COLORS.background,
+		height: "100%",
+	},
+
+	content: {
+		paddingVertical: 16,
+	},
+
+	separator: {
+		height: 12,
+	},
 });
