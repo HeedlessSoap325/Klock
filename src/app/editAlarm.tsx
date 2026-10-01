@@ -1,4 +1,4 @@
-import { useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import AlarmDetailView from "../components/AlarmDetailView";
 import { useAlarms } from "../context/AlarmContext";
 import { Entry, isAlarmGroup } from "../models/entry";
@@ -21,7 +21,7 @@ function findAlarm(entries: Entry[], id: number): Alarm | undefined {
 
 export default function EditAlarmScreen() {
 	const { alarm_id } = useLocalSearchParams<{ alarm_id: string }>();
-	const { entries } = useAlarms();
+	const { entries, updateAlarm, removeAlarm } = useAlarms();
 
 	const alarm = useMemo(() => 
 		findAlarm(entries, parseInt(alarm_id, 10)),
@@ -34,5 +34,19 @@ export default function EditAlarmScreen() {
 		</View>
 	);
 
-	return <AlarmDetailView alarm={alarm} />;
+	function onUpdate(update: Alarm) {
+		updateAlarm(parseInt(alarm_id, 10), update);
+		router.back();
+	}
+
+	function onCancle() {
+		router.back();
+	}
+
+	function onDelete(id: number) {
+		removeAlarm(id);
+		router.back();
+	}
+
+	return <AlarmDetailView alarm={alarm} onSave={onUpdate} onDelete={onDelete} onCancel={onCancle} />;
 }
