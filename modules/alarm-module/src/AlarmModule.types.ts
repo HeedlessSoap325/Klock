@@ -4,10 +4,18 @@ export interface AlarmModuleAlarm {
 	triggerAt: number,
 	label: string,
 	group: string,
+	ringtone: String,
+	vibrate: boolean,
 }
 
 export interface AlarmModuleNotification {
 	id: number,
 	delay: number,
 	alarm: AlarmModuleAlarm,
+}
+
+
+export interface Ringtone {
+  title: string;
+  uri: string; // "default" or content://media/...
 }

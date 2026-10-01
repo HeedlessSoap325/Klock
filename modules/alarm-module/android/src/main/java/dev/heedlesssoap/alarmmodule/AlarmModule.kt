@@ -35,5 +35,24 @@ class AlarmModule : Module() {
                     notification
                 );
         }
-  }
+        
+        AsyncFunction("getRingtones") {
+            Ringtone.getRingtones(
+                appContext.reactContext ?: throw Exception("React context unavailable")
+            )
+        }
+        
+        Function("playPreview") {
+                stored: String
+            ->
+                Ringtone.play(
+                    appContext.reactContext ?: throw Exception("React context unavailable"),
+                    stored
+                )
+        }
+        
+        Function("stopPreview") {
+            Ringtone.stop()
+        }
+    }
 }

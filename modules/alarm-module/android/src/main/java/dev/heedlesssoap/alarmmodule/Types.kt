@@ -8,6 +8,8 @@ data class Alarm (
 	@Field val triggerAt: Long,
 	@Field val label: String,
 	@Field val group: String,
+	@Field val ringtone: String,
+	@Field val vibrate: Boolean,
 ) : Record;
 
 data class AlarmNotification (

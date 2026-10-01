@@ -8,6 +8,7 @@ import android.media.Ringtone
 import android.media.MediaPlayer
 import android.media.AudioAttributes
 import android.os.*
+import android.net.Uri 
 
 class AlarmRingingService : Service() {
 	private var mediaPlayer: MediaPlayer? = null
@@ -43,8 +44,13 @@ class AlarmRingingService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val id = intent?.getIntExtra("alarm_id", 0) ?: 0;
         val label = intent?.getStringExtra("alarm_label") ?: "Alarm";
+        val alarm = PreferencesWrapper.getAlarm(this, id);
         
-        val ringtoneURI = RingtoneManager.getActualDefaultRingtoneUri(this, RingtoneManager.TYPE_ALARM);
+        val fallbackUri: Uri = RingtoneManager.getActualDefaultRingtoneUri(this, RingtoneManager.TYPE_ALARM)
+            ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
+
+        val ringtoneUri: Uri = if (alarm.ringtone == "default") fallbackUri else Uri.parse(alarm.ringtone)
+        
         mediaPlayer = MediaPlayer().apply {
             setAudioAttributes(
                 AudioAttributes.Builder()
@@ -53,20 +59,24 @@ class AlarmRingingService : Service() {
                     .build()
             )
             
-            setDataSource(this@AlarmRingingService, ringtoneURI)
+            setDataSource(this@AlarmRingingService, ringtoneUri)
             
             prepare()
             start()
         };
         
-        val vibratorManager = getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager;
-        vibrator = vibratorManager.getDefaultVibrator();
-        vibrator?.vibrate(VibrationEffect.createWaveform(longArrayOf(0, 1000, 1000), 0));
+        if (alarm.vibrate) {
+            val vibratorManager = getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager;
+            vibrator = vibratorManager.getDefaultVibrator();
+            vibrator?.vibrate(VibrationEffect.createWaveform(longArrayOf(0, 1000, 1000), 0));
+        }
         
         val ringIntent = Intent(this, AlarmRingActivity::class.java)
 			.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
 			.putExtra("alarm_id", id)
-			.putExtra("alarm_label", label);
+			.putExtra("alarm_label", label)
+			.putExtra("alarm_ringtone", alarm.ringtone)
+			.putExtra("alarm_vibrate", alarm.vibrate);
 			
 		startActivity(ringIntent);
 		

@@ -16,6 +16,8 @@ object PreferencesWrapper {
 			put("label", alarm.label)
 			put("triggerAt", alarm.triggerAt)
 			put("group", alarm.group)
+			put("ringtone", alarm.ringtone)
+			put("vibrate", alarm.vibrate)
 		}
 	}
 	
@@ -24,7 +26,9 @@ object PreferencesWrapper {
 			alarm_obj.getInt("id"),
 			alarm_obj.getLong("triggerAt"),
 			alarm_obj.getString("label"),
-			alarm_obj.getString("group")
+			alarm_obj.getString("group"),
+			alarm_obj.getString("ringtone"),
+			alarm_obj.getBoolean("vibrate")
 		);
 	}
 	

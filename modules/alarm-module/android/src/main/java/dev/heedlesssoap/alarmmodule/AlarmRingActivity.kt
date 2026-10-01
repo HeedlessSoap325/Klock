@@ -20,6 +20,8 @@ class AlarmRingActivity : AppCompatActivity() {
 
         val label = intent.getStringExtra("alarm_label") ?: "Alarm";
         val id = intent.getIntExtra("alarm_id", 0);
+        val ringtone = intent.getStringExtra("alarm_ringtone") ?: "default";
+        val vibrate = intent.getBooleanExtra("alarm_vibrate", true);
 
         // Simplest version: native layout with Snooze/Dismiss buttons.
         setContentView(R.layout.activity_alarm_ringing)
@@ -39,7 +41,7 @@ class AlarmRingActivity : AppCompatActivity() {
         findViewById<android.widget.TextView>(R.id.snoozeButton).setOnClickListener {
             stopService(Intent(this, AlarmRingingService::class.java));
             
-            val snoozedAlarm = Alarm(id, System.currentTimeMillis() + 5 * 60 * 1000, label, "");
+            val snoozedAlarm = Alarm(id, System.currentTimeMillis() + 5 * 60 * 1000, label, "", ringtone, vibrate);
             AlarmScheduler.schedule(this, snoozedAlarm);
             
             finish();

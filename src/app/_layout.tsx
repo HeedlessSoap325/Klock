@@ -1,9 +1,11 @@
 import { Stack } from 'expo-router';
 import { AlarmProvider } from '../context/AlarmContext';
+import { RingtoneProvider } from '../context/RingtoneContext';
 
 export default function RootLayout() {
 	return (
 		<AlarmProvider>
+		<RingtoneProvider>
 			<Stack
 				screenOptions={{
 					headerStyle: {
@@ -47,6 +49,7 @@ export default function RootLayout() {
 					}}
 				/>
 			</Stack>
+		</RingtoneProvider>
 		</AlarmProvider>
 	);
 }

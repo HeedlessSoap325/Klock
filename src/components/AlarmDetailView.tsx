@@ -6,6 +6,8 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { clamp, formatDuration, msUntilNextRing, pad, summarizeDays } from "../utils/utils";
 import { useAlarms } from "../context/AlarmContext";
 import { isAlarmGroup } from "../models/entry";
+import { useRingtones } from "../context/RingtoneContext";
+import RingtonePickerModal from "./RingtonePickerModal";
 
 interface AlarmDetailViewProps {
 	onSave?: (alarm: Alarm, group_id: number | null) => void;
@@ -31,7 +33,10 @@ export default function AlarmDetailView({ onSave, alarm, onDelete, onCancel: onC
 	const [selectedGroupId, setSelectedGroupId] = useState<number | null>(groupId);
   	const [groupOpen, setGroupOpen] = useState(false);
 
-	const ringtone = alarm?.ringtone ?? "default";
+	const { ringtones } = useRingtones();
+	const [ringtone, setRingtone] = useState(alarm?.ringtone ?? "default");
+	const [ringtonePickerOpen, setRingtonePickerOpen] = useState(false);
+	const ringtoneTitle = ringtones.find((r) => r.uri === ringtone)?.title ?? "Default";
 
 	const h = clamp(parseInt(hour, 10) || 0, 0, 23);
 	const m = clamp(parseInt(minute, 10) || 0, 0, 59);
@@ -222,12 +227,13 @@ export default function AlarmDetailView({ onSave, alarm, onDelete, onCancel: onC
 
 					<Pressable
 						style={styles.row}
-						onPress={() => onPickRingtone?.(ringtone)}
+						onPress={() => setRingtonePickerOpen(true)}
 						accessibilityRole="button"
 					>
 						<Text style={styles.rowLabel}>Ringtone</Text>
+
 						<Text style={styles.rowValue} numberOfLines={1}>
-							{ringtone}
+							{ringtoneTitle}
 						</Text>
 					</Pressable>
 
@@ -281,6 +287,14 @@ export default function AlarmDetailView({ onSave, alarm, onDelete, onCancel: onC
 					<Text style={styles.saveLabel}>Save</Text>
 				</Pressable>
 			</View>
+
+			<RingtonePickerModal
+				visible={ringtonePickerOpen}
+				ringtones={ringtones}
+				value={ringtone}
+				onSelect={setRingtone}
+				onClose={() => setRingtonePickerOpen(false)}
+			/>
 		</View>
 	);
 }
