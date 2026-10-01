@@ -9,10 +9,11 @@ interface Props {
 	/** Called when the user flips the group switch. Parent should update every alarm in the group. */
 	onToggleGroup?: (active: boolean) => void;
 	onClickAlarm: (alarm_id: number) => void;
+	onClickAlarmGroup: (alarm_group_id: number) => void;
 	onToggleAlarm: (alarm_id: number, value: boolean) => void;
 }
 
-export default function AlarmGroupView({ group, onToggleGroup, onClickAlarm, onToggleAlarm }: Props) {
+export default function AlarmGroupView({ group, onToggleGroup, onClickAlarm, onClickAlarmGroup, onToggleAlarm }: Props) {
 	// A group is active if at least one of its alarms is active.
 	const isActive = group.alarms.some((alarm) => alarm.active);
 	const [expanded, setExpanded] = useState(isActive);
@@ -24,12 +25,11 @@ export default function AlarmGroupView({ group, onToggleGroup, onClickAlarm, onT
 		<View style={[styles.container, !isActive && styles.containerOff]}>
 		<View style={styles.header}>
 			<Pressable
-			style={styles.headerPress}
-			onPress={() => setExpanded((e) => !e)}
-			accessibilityRole="button"
-			accessibilityState={{ expanded }}
+				style={styles.headerPress}
+				accessibilityRole="button"
+				onPress={() => onClickAlarmGroup(group.id)}
 			>
-			<View style={{
+				<View style={{
 					width: 10,
 					height: 10,
 					borderRadius: 5,
@@ -39,23 +39,31 @@ export default function AlarmGroupView({ group, onToggleGroup, onClickAlarm, onT
 				}}
 				/>
 
-			<View style={expanded ? styles.titleInline : styles.titleStacked}>
-				<Text style={[styles.name, !isActive && styles.textOff]}>
-				{group.name}
-				</Text>
-				<Text
-				style={[
-					styles.count,
-					expanded ? styles.countInline : styles.countStacked,
-					!isActive && !expanded && styles.countOffCollapsed,
-				]}
-				>
-				{countLabel}
-				</Text>
-			</View>
-
-			<View style={[styles.chevron, expanded ? styles.chevronUp : styles.chevronDown]} />
+				<View style={expanded ? styles.titleInline : styles.titleStacked}>
+					<Text style={[styles.name, !isActive && styles.textOff]}>
+					{group.name}
+					</Text>
+					<Text
+					style={[
+						styles.count,
+						expanded ? styles.countInline : styles.countStacked,
+						!isActive && !expanded && styles.countOffCollapsed,
+					]}
+					>
+					{countLabel}
+					</Text>
+				</View>
 			</Pressable>
+
+			<Pressable 
+				style={styles.chevronPressable}
+				onPress={() => setExpanded((e) => !e)}
+				accessibilityRole="button"
+				accessibilityState={{ expanded }}
+				>
+				<View style={[styles.chevron, expanded ? styles.chevronUp : styles.chevronDown]} />
+			</Pressable>
+			
 
 			<Switch
 			value={isActive}
@@ -140,6 +148,10 @@ const styles = StyleSheet.create({
 
 	textOff: {
 	  	color: COLORS.textOff,
+	},
+
+	chevronPressable: {
+		padding: 20
 	},
 
 	chevron: {

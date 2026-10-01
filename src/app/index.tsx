@@ -19,6 +19,10 @@ export default function AlarmsScreen() {
 		router.push(`/editAlarm?alarm_id=${encodeURIComponent(alarm_id)}`)
 	}
 
+	function onEditAlarmGroup(alarm_group_id: number) {
+		router.push(`/editAlarmGroup?alarm_group_id=${encodeURIComponent(alarm_group_id)}`)
+	}
+
 	function onToggleAlarm(alarm_id: number, value: boolean) {
 		updateAlarm(alarm_id, {active: value})
 	}
@@ -39,7 +43,7 @@ export default function AlarmsScreen() {
 				}
 				renderItem={({ item }) =>
 					isAlarmGroup(item) ? (
-						<AlarmGroupView group={item} onClickAlarm={onEditAlarm} onToggleAlarm={onToggleAlarm} />
+						<AlarmGroupView group={item} onClickAlarm={onEditAlarm} onClickAlarmGroup={onEditAlarmGroup} onToggleAlarm={onToggleAlarm} />
 					) : (
 						<AlarmView alarm={item} onClick={onEditAlarm} onToggle={onToggleAlarm} />
 					)
