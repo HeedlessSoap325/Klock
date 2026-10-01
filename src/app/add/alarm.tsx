@@ -1,7 +1,7 @@
 import { useRouter } from "expo-router";
-import AlarmDetailView from "../components/AlarmDetailView";
-import { Alarm } from "../models/alarm";
-import { useAlarms } from "../context/AlarmContext";
+import AlarmDetailView from "../../components/AlarmDetailView";
+import { Alarm } from "../../models/alarm";
+import { useAlarms } from "../../context/AlarmContext";
 
 export default function AddAlarmScreen() {
 	const router = useRouter();
@@ -9,7 +9,7 @@ export default function AddAlarmScreen() {
 	
 	function onAddAlarm(alarm: Alarm) {
 		addAlarm(alarm);
-		router.back();
+		router.dismiss();
 	}
 
 	return (

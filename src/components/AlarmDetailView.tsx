@@ -18,7 +18,6 @@ type Weekday = Alarm["weekdays"][number];
 export default function AlarmDetailView({ onSave, alarm, onDelete, onCancel: onCancle, onPickRingtone }: AlarmDetailViewProps) {
 	const isEdit = alarm !== undefined;
 	const now = new Date(Date.now())
-	const insets = useSafeAreaInsets();
 
 	const [hour, setHour] = useState(pad(alarm?.hour ?? now.getHours()));
 	const [minute, setMinute] = useState(pad(alarm?.minute ?? now.getMinutes()));
@@ -59,10 +58,7 @@ export default function AlarmDetailView({ onSave, alarm, onDelete, onCancel: onC
 	};
 
 	return (
-		<View style={{
-			...styles.container, 
-			paddingBottom: insets.bottom,
-		}}>
+		<View style={styles.container}>
 			<ScrollView
 				style={styles.scroll}
 				contentContainerStyle={styles.scrollContent}

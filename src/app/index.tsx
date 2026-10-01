@@ -55,7 +55,7 @@ export default function AlarmsScreen() {
 					opacity: pressed ? 0.8 : 1,
 					transform: pressed ? "scale(0.95)" : "",
 				}
-			]} onPress={() => router.push("/addAlarm")}>
+			]} onPress={() => router.push("/add/alarm")}>
 				<Ionicons name="add" size={42} />
 			</Pressable>
 		</View>

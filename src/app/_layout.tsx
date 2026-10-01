@@ -15,6 +15,7 @@ export default function RootLayout() {
 					},
 				}}
 			>
+				<Stack.Screen name="(tabs)" />
 				<Stack.Screen
 					name="index"
 					options={{
@@ -23,17 +24,9 @@ export default function RootLayout() {
 				/>
 
 				<Stack.Screen
-					name="addAlarm"
+					name="add"
 					options={{
 						title: "Add alarm",
-						presentation: "modal",
-					}}
-				/>
-
-				<Stack.Screen
-					name="editAlarm"
-					options={{
-						title: "Edit alarm",
 						presentation: "modal",
 					}}
 				/>
