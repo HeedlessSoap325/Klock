@@ -15,6 +15,10 @@ export default function AlarmsScreen() {
 
 	const { entries } = useAlarms();
 
+	function onEditAlarm(alarm_id: number) {
+		router.push(`/editAlarm?alarm_id=${encodeURIComponent(alarm_id)}`)
+	}
+
 	return (
 		<View style={[
 			styles.container,
@@ -31,9 +35,9 @@ export default function AlarmsScreen() {
 				}
 				renderItem={({ item }) =>
 					isAlarmGroup(item) ? (
-						<AlarmGroupView group={item} />
+						<AlarmGroupView group={item} onClickAlarm={onEditAlarm} />
 					) : (
-						<AlarmView alarm={item} />
+						<AlarmView alarm={item} onClick={onEditAlarm} />
 					)
 				}
 				ItemSeparatorComponent={() => <View style={styles.separator} />}

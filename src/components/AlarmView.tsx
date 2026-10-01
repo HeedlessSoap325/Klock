@@ -1,48 +1,51 @@
-import { View, Text, Switch, Pressable, StyleSheet } from "react-native";
+import { View, Text, Switch, Pressable, StyleSheet, TouchableOpacity } from "react-native";
 import { Alarm } from "../models/alarm";
 import { COLORS } from "../styles/colors";
 import { formatDuration, msUntilNextRing, summarizeDays } from "../utils/utils";
 
-export default function AlarmView({ alarm, embedded = false }: { alarm: Alarm, embedded?: boolean }) {
+export default function AlarmView({ alarm, embedded = false, onClick }: { alarm: Alarm, embedded?: boolean, onClick: (alarm_id: number) => void }) {
 		const time = `${String(alarm.hour).padStart(2, "0")}:${String(alarm.minute).padStart(2, "0")}`;
 		const nextRing = alarm.active ? msUntilNextRing(alarm.hour, alarm.minute, alarm.weekdays) : null;
 
 		return (
+			
 			<View style={[
 				styles.container,
 				embedded && styles.embedded,
 				!alarm.active && styles.containerOff,
 			]}>
-				<View style={styles.left}>
-					<Text style={[styles.name, !alarm.active && styles.textOff]}>{alarm.name ? `${alarm.name}` : ""}</Text>
-					<Text style={[styles.time, !alarm.active && styles.textOff]}>{time}</Text>
+				<TouchableOpacity style={styles.touch} onPress={() => onClick(alarm.id)}>
+					<View style={styles.left}>
+						<Text style={[styles.name, !alarm.active && styles.textOff]}>{alarm.name ? `${alarm.name}` : ""}</Text>
+						<Text style={[styles.time, !alarm.active && styles.textOff]}>{time}</Text>
 
-					<Text style={styles.subtitle} numberOfLines={1}>
-						{summarizeDays(alarm.weekdays)}{ nextRing && ", rings in"} {" "}
-						
-						{nextRing && (
-							<Text style={[styles.countdown, !alarm.active && styles.textOff]}>
-								{formatDuration(nextRing)}
-							</Text>
-						)}
-					</Text>
-				</View>
+						<Text style={styles.subtitle} numberOfLines={1}>
+							{summarizeDays(alarm.weekdays)}{ nextRing && ", rings in"} {" "}
+							
+							{nextRing && (
+								<Text style={[styles.countdown, !alarm.active && styles.textOff]}>
+									{formatDuration(nextRing)}
+								</Text>
+							)}
+						</Text>
+					</View>
 
-				<View style={styles.right}>
-					<Switch
-						value={alarm.active}
-						trackColor={{ false: COLORS.trackOff, true: COLORS.accent }}
-						thumbColor={alarm.active ? COLORS.thumbOn : COLORS.textOff}
-						ios_backgroundColor={COLORS.trackOff}
-					/>
+					<View style={styles.right}>
+						<Switch
+							value={alarm.active}
+							trackColor={{ false: COLORS.trackOff, true: COLORS.accent }}
+							thumbColor={alarm.active ? COLORS.thumbOn : COLORS.textOff}
+							ios_backgroundColor={COLORS.trackOff}
+						/>
 
-					<Pressable
-						hitSlop={8}
-						style={({ pressed }) => ( pressed && alarm.active) && styles.pressed}
-					>
-						<Text style={alarm.active ? styles.skip : styles.skipOff}>Skip next</Text>
-					</Pressable>
-				</View>
+						<Pressable
+							hitSlop={8}
+							style={({ pressed }) => ( pressed && alarm.active) && styles.pressed}
+						>
+							<Text style={alarm.active ? styles.skip : styles.skipOff}>Skip next</Text>
+						</Pressable>
+					</View>
+				</TouchableOpacity>
 			</View>
 		);
 }
@@ -51,13 +54,17 @@ const styles = StyleSheet.create({
 	container: {
 		width: "90%",
 		alignSelf: "center",
+		backgroundColor: COLORS.card,
+		borderRadius: 22,
+	},
+
+	touch: {
+		width: "100%",
 		flexDirection: "row",
 		alignItems: "stretch",
 		justifyContent: "space-between",
-		backgroundColor: COLORS.card,
 		paddingVertical: 14,
 		paddingHorizontal: 18,
-		borderRadius: 22,
 	},
 
 	embedded: {
