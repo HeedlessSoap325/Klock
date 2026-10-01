@@ -27,6 +27,15 @@ export default function AlarmsScreen() {
 		updateAlarm(alarm_id, {active: value})
 	}
 
+	function onToggleGroup(alarm_group_id: number, active: boolean) {
+		const group = entries.filter(isAlarmGroup).find((g) => g.id === alarm_group_id);
+		if (!group) return;
+
+		for (let alarm of group.alarms) {
+			updateAlarm(alarm.id, {active: active})
+		}
+	}
+
 	return (
 		<View style={[
 			styles.container,

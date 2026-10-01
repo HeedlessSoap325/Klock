@@ -7,7 +7,7 @@ import { COLORS } from "../styles/colors";
 interface Props {
 	group: AlarmGroup;
 	/** Called when the user flips the group switch. Parent should update every alarm in the group. */
-	onToggleGroup?: (active: boolean) => void;
+	onToggleGroup?: (alarm_group_id: number, active: boolean) => void;
 	onClickAlarm: (alarm_id: number) => void;
 	onClickAlarmGroup: (alarm_group_id: number) => void;
 	onToggleAlarm: (alarm_id: number, value: boolean) => void;
@@ -66,11 +66,11 @@ export default function AlarmGroupView({ group, onToggleGroup, onClickAlarm, onC
 			
 
 			<Switch
-			value={isActive}
-			onValueChange={onToggleGroup}
-			trackColor={{ false: COLORS.trackOff, true: COLORS.accent }}
-			thumbColor={isActive ? COLORS.thumbOn : COLORS.textOff}
-			ios_backgroundColor={COLORS.trackOff}
+				value={isActive}
+				onValueChange={(v) => onToggleGroup?.(group.id, v)}
+				trackColor={{ false: COLORS.trackOff, true: COLORS.accent }}
+				thumbColor={isActive ? COLORS.thumbOn : COLORS.textOff}
+				ios_backgroundColor={COLORS.trackOff}
 			/>
 		</View>
 
