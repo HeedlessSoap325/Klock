@@ -2,11 +2,15 @@ import { View, Text, Switch, Pressable, StyleSheet } from "react-native";
 import { Alarm } from "../models/alarm";
 import { COLORS } from "../styles/colors";
 
-export default function AlarmView({ alarm }: { alarm: Alarm }) {
+export default function AlarmView({ alarm, embedded = false }: { alarm: Alarm, embedded?: boolean }) {
 		const time = `${String(alarm.hour).padStart(2, "0")}:${String(alarm.minute).padStart(2, "0")}`;
 
 		return (
-			<View style={[styles.container, !alarm.active && styles.containerOff]}>
+			<View style={[
+				styles.container,
+				embedded && styles.embedded,
+				!alarm.active && styles.containerOff,
+			]}>
 				<View style={styles.left}>
 					<Text style={[styles.name, !alarm.active && styles.textOff]}>{alarm.name ? `${alarm.name}` : ""}</Text>
 					<Text style={[styles.time, !alarm.active && styles.textOff]}>{time}</Text>
@@ -49,6 +53,13 @@ const styles = StyleSheet.create({
 		paddingVertical: 14,
 		paddingHorizontal: 18,
 		borderRadius: 22,
+	},
+
+	embedded: {
+		width: "100%",
+		backgroundColor: "transparent",
+		paddingHorizontal: 0,
+		borderRadius: 0,
 	},
 
 	containerOff: {
