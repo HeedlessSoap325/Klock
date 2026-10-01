@@ -10,4 +10,6 @@ export const COLORS = {
 	highlight: "#FFC857",
 	trackOff: "#39415F",
 	thumbOn: "#0F1424",
+	danger: "#FF8A8A",
+	chip: "#2C3660",
 };

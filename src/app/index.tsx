@@ -1,17 +1,17 @@
 import { FlatList, Pressable, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import { Alarm } from '../models/alarm';
 import AlarmView from '../components/AlarmView';
-import { AlarmGroup } from '../models/alarmGroup';
 import AlarmGroupView from '../components/AlarmGroupView';
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Entry, isAlarmGroup } from '../models/entry';
+import { isAlarmGroup } from '../models/entry';
 import { COLORS } from '../styles/colors';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import { useAlarms } from '../context/AlarmContext';
 
 export default function AlarmsScreen() {
 	const insets = useSafeAreaInsets();
+	const router = useRouter();
 
 	const { entries } = useAlarms();
 
@@ -47,7 +47,7 @@ export default function AlarmsScreen() {
 					opacity: pressed ? 0.8 : 1,
 					transform: pressed ? "scale(0.95)" : "",
 				}
-			]}>
+			]} onPress={() => router.push("/addAlarm")}>
 				<Ionicons name="add" size={42} />
 			</Pressable>
 		</View>

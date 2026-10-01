@@ -1,9 +1,11 @@
 import { View, Text, Switch, Pressable, StyleSheet } from "react-native";
 import { Alarm } from "../models/alarm";
 import { COLORS } from "../styles/colors";
+import { formatDuration, msUntilNextRing, summarizeDays } from "../utils/utils";
 
 export default function AlarmView({ alarm, embedded = false }: { alarm: Alarm, embedded?: boolean }) {
 		const time = `${String(alarm.hour).padStart(2, "0")}:${String(alarm.minute).padStart(2, "0")}`;
+		const nextRing = alarm.active ? msUntilNextRing(alarm.hour, alarm.minute, alarm.weekdays) : null;
 
 		return (
 			<View style={[
@@ -16,10 +18,13 @@ export default function AlarmView({ alarm, embedded = false }: { alarm: Alarm, e
 					<Text style={[styles.time, !alarm.active && styles.textOff]}>{time}</Text>
 
 					<Text style={styles.subtitle} numberOfLines={1}>
-						Mon to Fri, rings in{" "}
-						<Text style={[styles.countdown, !alarm.active && styles.textOff]}>
-							7h 32m
-						</Text>
+						{summarizeDays(alarm.weekdays)}{ nextRing && ", rings in"} {" "}
+						
+						{nextRing && (
+							<Text style={[styles.countdown, !alarm.active && styles.textOff]}>
+								{formatDuration(nextRing)}
+							</Text>
+						)}
 					</Text>
 				</View>
 

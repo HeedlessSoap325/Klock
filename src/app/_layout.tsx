@@ -21,6 +21,14 @@ export default function RootLayout() {
 						title: "Alarms",
 					}}
 				/>
+
+				<Stack.Screen
+					name="addAlarm"
+					options={{
+						title: "Add alarm",
+						presentation: "modal",
+					}}
+				/>
 			</Stack>
 		</AlarmProvider>
 	);

@@ -1,6 +1,16 @@
-type Weekday = "Monday" | "Tuesday" | "Wednesday" | "Thursday" | "Friday" | "Saturday" | "Sunday";
+export type Weekday = "Monday" | "Tuesday" | "Wednesday" | "Thursday" | "Friday" | "Saturday" | "Sunday";
 
-interface TimeRange {
+export const WEEK: { day: Weekday; letter: string; short: string }[] = [
+	{ day: "Monday", letter: "M", short: "Mon" },
+	{ day: "Tuesday", letter: "T", short: "Tue" },
+	{ day: "Wednesday", letter: "W", short: "Wed" },
+	{ day: "Thursday", letter: "T", short: "Thu" },
+	{ day: "Friday", letter: "F", short: "Fri" },
+	{ day: "Saturday", letter: "S", short: "Sat" },
+	{ day: "Sunday", letter: "S", short: "Sun" },
+];
+
+export interface TimeRange {
 	start: Date,
 	end: Date,
 };
