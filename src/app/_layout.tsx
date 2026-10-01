@@ -26,7 +26,23 @@ export default function RootLayout() {
 				<Stack.Screen
 					name="add"
 					options={{
-						title: "Add alarm",
+						title: "Add alarm / group",
+						presentation: "modal",
+					}}
+				/>
+
+				<Stack.Screen
+					name="editAlarm"
+					options={{
+						title: "Edit alarm",
+						presentation: "modal",
+					}}
+				/>
+
+				<Stack.Screen
+					name="editAlarmGroup"
+					options={{
+						title: "Edit alarm group",
 						presentation: "modal",
 					}}
 				/>
