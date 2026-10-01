@@ -33,9 +33,9 @@ export default function AlarmView({ alarm, embedded = false }: { alarm: Alarm, e
 
 					<Pressable
 						hitSlop={8}
-						style={({ pressed }) => pressed && styles.pressed}
+						style={({ pressed }) => ( pressed && alarm.active) && styles.pressed}
 					>
-						<Text style={styles.skip}>Skip next</Text>
+						<Text style={alarm.active ? styles.skip : styles.skipOff}>Skip next</Text>
 					</Pressable>
 				</View>
 			</View>
@@ -110,6 +110,12 @@ const styles = StyleSheet.create({
 		fontSize: 14,
 		fontWeight: "600",
 		color: COLORS.accent,
+	},
+
+	skipOff: {
+		fontSize: 14,
+		fontWeight: "600",
+		color: COLORS.textOff,
 	},
 
 	pressed: {
