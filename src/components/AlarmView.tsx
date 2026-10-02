@@ -3,7 +3,7 @@ import { Alarm } from "../models/alarm";
 import { COLORS } from "../styles/colors";
 import { formatDuration, msUntilNextRing, summarizeDays } from "../utils/utils";
 
-export default function AlarmView({ alarm, embedded = false, onClick, onToggle }: { alarm: Alarm, embedded?: boolean, onClick: (alarm_id: number) => void, onToggle: (alarm_id: number, value: boolean) => void }) {
+export default function AlarmView({ alarm, embedded = false, onClick, onToggle, onDismissNextAlarm }: { alarm: Alarm, embedded?: boolean, onClick: (alarm_id: number) => void, onToggle: (alarm_id: number, value: boolean) => void, onDismissNextAlarm: (alarm: Alarm) => void}) {
 		const time = `${String(alarm.hour).padStart(2, "0")}:${String(alarm.minute).padStart(2, "0")}`;
 		const nextRing = alarm.active ? msUntilNextRing(alarm.hour, alarm.minute, alarm.weekdays) : null;
 
@@ -42,6 +42,7 @@ export default function AlarmView({ alarm, embedded = false, onClick, onToggle }
 						<Pressable
 							hitSlop={8}
 							style={({ pressed }) => ( pressed && alarm.active) && styles.pressed}
+							onPress={() => onDismissNextAlarm(alarm)}
 						>
 							<Text style={alarm.active ? styles.skip : styles.skipOff}>Skip next</Text>
 						</Pressable>

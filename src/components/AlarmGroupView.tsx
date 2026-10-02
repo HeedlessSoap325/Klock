@@ -3,6 +3,7 @@ import { View, Text, Switch, Pressable, StyleSheet } from "react-native";
 import { AlarmGroup } from "../models/alarmGroup";
 import AlarmView from "./AlarmView";
 import { COLORS } from "../styles/colors";
+import { Alarm } from "../models/alarm";
 
 interface Props {
 	group: AlarmGroup;
@@ -11,9 +12,10 @@ interface Props {
 	onClickAlarm: (alarm_id: number) => void;
 	onClickAlarmGroup: (alarm_group_id: number) => void;
 	onToggleAlarm: (alarm_id: number, value: boolean) => void;
+	onDismissNextAlarm: (alarm: Alarm) => void;
 }
 
-export default function AlarmGroupView({ group, onToggleGroup, onClickAlarm, onClickAlarmGroup, onToggleAlarm }: Props) {
+export default function AlarmGroupView({ group, onToggleGroup, onClickAlarm, onClickAlarmGroup, onToggleAlarm, onDismissNextAlarm }: Props) {
 	// A group is active if at least one of its alarms is active.
 	const isActive = group.alarms.some((alarm) => alarm.active);
 	const [expanded, setExpanded] = useState(isActive);
@@ -78,7 +80,7 @@ export default function AlarmGroupView({ group, onToggleGroup, onClickAlarm, onC
 			group.alarms.map((alarm) => (
 			<View key={alarm.id}>
 				<View style={styles.divider} />
-				<AlarmView alarm={alarm} onClick={onClickAlarm} onToggle={onToggleAlarm} embedded />
+				<AlarmView alarm={alarm} onClick={onClickAlarm} onToggle={onToggleAlarm} onDismissNextAlarm={onDismissNextAlarm} embedded />
 			</View>
 			))}
 		</View>

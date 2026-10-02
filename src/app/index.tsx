@@ -9,6 +9,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useAlarms } from '../context/AlarmContext';
 import NextAlarmView from '../components/NextAlarmView';
+import { dismissNext } from '../utils/alarmSchedulerHelper';
+import { Alarm } from '../models/alarm';
 
 export default function AlarmsScreen() {
 	const insets = useSafeAreaInsets();
@@ -37,6 +39,10 @@ export default function AlarmsScreen() {
 		}
 	}
 
+	function onDismissNextAlarm(alarm: Alarm) {
+		dismissNext(alarm, (id) => updateAlarm(id, { active: false }));
+	}
+
 	return (
 		<View style={[
 			styles.container,
@@ -55,9 +61,9 @@ export default function AlarmsScreen() {
 				}
 				renderItem={({ item }) =>
 					isAlarmGroup(item) ? (
-						<AlarmGroupView group={item} onClickAlarm={onEditAlarm} onClickAlarmGroup={onEditAlarmGroup} onToggleGroup={onToggleGroup} onToggleAlarm={onToggleAlarm} />
+						<AlarmGroupView group={item} onClickAlarm={onEditAlarm} onClickAlarmGroup={onEditAlarmGroup} onToggleGroup={onToggleGroup} onToggleAlarm={onToggleAlarm} onDismissNextAlarm={onDismissNextAlarm}/>
 					) : (
-						<AlarmView alarm={item} onClick={onEditAlarm} onToggle={onToggleAlarm} />
+						<AlarmView alarm={item} onClick={onEditAlarm} onToggle={onToggleAlarm} onDismissNextAlarm={onDismissNextAlarm} />
 					)
 				}
 				ItemSeparatorComponent={() => <View style={styles.separator} />}

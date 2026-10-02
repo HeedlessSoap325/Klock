@@ -2,32 +2,51 @@ import { View, StyleSheet, Text } from "react-native";
 import { useAlarms } from "../context/AlarmContext";
 import { Alarm } from "../models/alarm";
 import { useEffect, useMemo, useState } from "react";
-import { isAlarmGroup } from "../models/entry";
+import { Entry, isAlarmGroup } from "../models/entry";
 import { formatDuration, msUntilNextRing, pad } from "../utils/utils";
 import { COLORS } from "../styles/colors";
+import { getNextAlarmId } from "../utils/alarmSchedulerHelper";
 
 export default function NextAlarmView() {
 	const { entries } = useAlarms();
 	const [now, setNow] = useState(() => Date.now());
-	
-	const nextAlarm = useMemo<Alarm | null>(() => {
-		const all: Alarm[] = entries.flatMap((e) =>
-			isAlarmGroup(e) ? e.alarms : [e]
-		);
-	
-		let closest: Alarm | null = null;
-		let closestDelay = Infinity;
-		
-		for (const a of all) {
-			const delay = msUntilNextRing(a.hour, a.minute, a.weekdays) ?? Infinity;
-			if (delay < closestDelay) {
-				closestDelay = delay;
-				closest = a;
+	const [nextAlarmId, setNextAlarmId] = useState<number | null>(null);
+
+	function findAlarm(entries: Entry[], id: number): Alarm | null {
+		for (const entry of entries) {
+			if (isAlarmGroup(entry)) {
+				const found = entry.alarms.find((a) => a.id === id);
+				if (found) return found;
+			} else if (entry.id === id) {
+				return entry;
 			}
 		}
+		
+		return null;
+	}
 	
-	  	return closest;
+	useEffect(() => {
+		let cancelled = false;
+	
+		(async () => {
+			try {
+			const id = await getNextAlarmId();
+			if (!cancelled) setNextAlarmId(id ?? null);
+			} catch (e) {
+			console.error(`Failed to get next alarm id: ${e}`);
+			if (!cancelled) setNextAlarmId(null);
+			}
+		})();
+	
+		return () => {
+			cancelled = true;
+		};
 	}, [entries, now]);
+	
+	const nextAlarm = useMemo<Alarm | null>(
+		() => (nextAlarmId == null ? null : findAlarm(entries, nextAlarmId)),
+		[entries, nextAlarmId]
+	);
 	
 	const nextAlarmDelay = useMemo<number>(() => {
 		if (!nextAlarm) return -1;

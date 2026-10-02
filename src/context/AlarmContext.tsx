@@ -3,6 +3,10 @@ import AsyncStorage from "@react-native-async-storage/async-storage"
 import { Alarm } from '../models/alarm';
 import { AlarmGroup } from '../models/alarmGroup';
 import { Entry, isAlarmGroup } from '../models/entry';
+import { msUntilNextRing } from '../utils/utils';
+import AlarmModule from '../../modules/alarm-module/src/AlarmModule';
+import { AlarmModuleAlarm, AlarmModuleNotification } from '../../modules/alarm-module/src/AlarmModule.types';
+import { syncAlarms } from '../utils/alarmSchedulerHelper';
 
 interface AlarmContextType {
 	entries: Entry[];
@@ -95,6 +99,12 @@ export function AlarmProvider({ children }: { children: ReactNode }) {
 
 		save();
 	}, [entries]);
+
+	useEffect(() => {
+		if (!loaded) return;
+
+		syncAlarms(entries, (id) => updateAlarm(id, { active: false }));
+	}, [entries, loaded]);
 
 	useEffect(() => {
 		async function load() {
