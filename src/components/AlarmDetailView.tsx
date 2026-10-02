@@ -208,8 +208,6 @@ export default function AlarmDetailView({ onSave, alarm, onDelete, onCancel: onC
 					</>
 					)}
 
-					<View style={styles.divider} />
-
 					<View style={styles.row}>
 						<Text style={styles.rowLabel}>Label</Text>
 						<TextInput
