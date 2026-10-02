@@ -2,6 +2,7 @@ export const COLORS = {
 	background: "#141a2d",
 	card: "#1F2742",
 	cardOff: "#1A2038",
+	cardAccent: "#3f4b91",
 	text: "#EEF1F8",
 	textMuted: "#A9B3D6",
 	textOff: "#8B94B5",

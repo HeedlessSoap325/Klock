@@ -8,6 +8,7 @@ import { COLORS } from '../styles/colors';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useAlarms } from '../context/AlarmContext';
+import NextAlarmView from '../components/NextAlarmView';
 
 export default function AlarmsScreen() {
 	const insets = useSafeAreaInsets();
@@ -44,6 +45,8 @@ export default function AlarmsScreen() {
 			}
 		]}>
 			<StatusBar style="light" />
+
+			<NextAlarmView />
 
 			<FlatList
 				data={entries}
