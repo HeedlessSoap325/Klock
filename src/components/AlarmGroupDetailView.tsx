@@ -18,7 +18,7 @@ export default function AlarmGroupDetail({ onSave, group, onDelete, onCancel } :
 		const alarmGroup: AlarmGroup = {
 			id: Date.now(),
 			name: name,
-			alarms: [],
+			alarms: group ? group.alarms : [],
 		}
 		onSave!(alarmGroup);
 	}
