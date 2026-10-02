@@ -11,7 +11,9 @@ class AlarmReceiver : BroadcastReceiver() {
     	
         val alarmRingService = Intent(context, AlarmRingingService::class.java)
             .putExtra("alarm_id", alarm.id)
-            .putExtra("alarm_label", alarm.label);
+            .putExtra("alarm_label", alarm.label)
+            .putExtra("alarm_ringtone", alarm.ringtone)
+            .putExtra("alarm_vibrate", alarm.vibrate);
             
     
         context.startForegroundService(alarmRingService);

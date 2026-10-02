@@ -44,12 +44,13 @@ class AlarmRingingService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val id = intent?.getIntExtra("alarm_id", 0) ?: 0;
         val label = intent?.getStringExtra("alarm_label") ?: "Alarm";
-        val alarm = PreferencesWrapper.getAlarm(this, id);
+        val ringtone = intent?.getStringExtra("alarm_ringtone") ?: "default";
+        val vibrate = intent?.getBooleanExtra("alarm_vibrate", true) ?: true;
         
         val fallbackUri: Uri = RingtoneManager.getActualDefaultRingtoneUri(this, RingtoneManager.TYPE_ALARM)
             ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
 
-        val ringtoneUri: Uri = if (alarm.ringtone == "default") fallbackUri else Uri.parse(alarm.ringtone)
+        val ringtoneUri: Uri = if (ringtone == "default") fallbackUri else Uri.parse(ringtone)
         
         mediaPlayer = MediaPlayer().apply {
             setAudioAttributes(
@@ -61,11 +62,13 @@ class AlarmRingingService : Service() {
             
             setDataSource(this@AlarmRingingService, ringtoneUri)
             
+            setLooping(true)
+            
             prepare()
             start()
         };
         
-        if (alarm.vibrate) {
+        if (vibrate) {
             val vibratorManager = getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager;
             vibrator = vibratorManager.getDefaultVibrator();
             vibrator?.vibrate(VibrationEffect.createWaveform(longArrayOf(0, 1000, 1000), 0));
@@ -75,8 +78,8 @@ class AlarmRingingService : Service() {
 			.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
 			.putExtra("alarm_id", id)
 			.putExtra("alarm_label", label)
-			.putExtra("alarm_ringtone", alarm.ringtone)
-			.putExtra("alarm_vibrate", alarm.vibrate);
+			.putExtra("alarm_ringtone", ringtone)
+			.putExtra("alarm_vibrate", vibrate);
 			
 		startActivity(ringIntent);
 		
